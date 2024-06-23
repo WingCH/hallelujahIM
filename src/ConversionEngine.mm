@@ -1,4 +1,5 @@
 #import "ConversionEngine.h"
+#import "hallelujah-Swift.h"
 
 NSDictionary *deserializeJSON(NSString *path) {
     NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:path];
@@ -109,7 +110,16 @@ marisa::Trie trie;
 }
 
 - (NSArray *)getTranslations:(NSString *)word {
-    return (self.wordsWithFrequencyAndTranslation)[word][@"translation"];
+    OpenCCManager *openCCManager = [[OpenCCManager alloc] init];
+    NSArray *translations = (self.wordsWithFrequencyAndTranslation)[word][@"translation"];
+    NSMutableArray *convertedTranslations = [NSMutableArray arrayWithCapacity:translations.count];
+    
+    for (NSString *simplifiedText in translations) {
+        NSString *traditionalText = [openCCManager convert:simplifiedText];
+        [convertedTranslations addObject:traditionalText];
+    }
+    
+    return [convertedTranslations copy];
 }
 
 - (NSString *)getPhoneticSymbolOfWord:(NSString *)candidateString {
